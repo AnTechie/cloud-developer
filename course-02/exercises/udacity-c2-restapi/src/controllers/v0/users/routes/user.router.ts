@@ -5,7 +5,7 @@ import { AuthRouter, requireAuth } from './auth.router';
 
 const router: Router = Router();
 
-router.use('/auth', AuthRouter);
+ router.use('/auth', AuthRouter);
 
 router.get('/', async (req: Request, res: Response) => {
 });
