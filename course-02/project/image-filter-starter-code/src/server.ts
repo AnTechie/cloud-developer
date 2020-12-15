@@ -1,4 +1,4 @@
-import express from 'express';
+import express,{Request,Response} from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
@@ -6,7 +6,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   // Init the Express application
   const app = express();
-
+  var path = require('path'); 
   // Set the network port
   const port = process.env.PORT || 8082;
   
@@ -33,8 +33,29 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   
   // Root Endpoint
   // Displays a simple message to the user
+
+  app.get( "/filteredimage/:image_url",   ( req:Request, res:Response ) => {
+    let { image_url } = req.params;
+
+  return res.status(200)
+              .send(`Welcome to the Cloud, ${image_url}!`);
+
+  } );
+  
   app.get( "/", async ( req, res ) => {
-    res.send("try GET /filteredimage?image_url={{}}")
+    var options = { 
+      root: path.join(__dirname) 
+  }; 
+    
+  var fileName = 'ch2.jpg'; 
+    res.sendFile(fileName, options, function (err) { 
+      if (err) { 
+          res.send(err); 
+      } else { 
+          console.log('Sent:', fileName); 
+      } 
+  }); 
+   // res.send("try GET /filteredimage?image_url={{}}")
   } );
   
 
