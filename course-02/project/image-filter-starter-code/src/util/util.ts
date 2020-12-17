@@ -11,13 +11,15 @@ import Jimp = require('jimp');
 export async function filterImageFromURL(inputURL: string): Promise<string>{
     return new Promise( async resolve => {
         const photo = await Jimp.read(inputURL);
-        const outpath = '/tmp/filtered.'+Math.floor(Math.random() * 2000)+'.jpg';
+       // const outpath = '/tmp/filtered.'+Math.floor(Math.random() * 2000)+'.jpg';
+       const outpath = '/tmp/filteredimage.jpg';
         await photo
         .resize(256, 256) // resize
         .quality(60) // set JPEG quality
         .greyscale() // set greyscale
         .write(__dirname+outpath, (img)=>{
             resolve(__dirname+outpath);
+            console.log("file resized");
         });
     });
 }
@@ -28,7 +30,13 @@ export async function filterImageFromURL(inputURL: string): Promise<string>{
 // INPUTS
 //    files: Array<string> an array of absolute paths to files
 export async function deleteLocalFiles(files:Array<string>){
+    var path = require('path'); 
     for( let file of files) {
-        fs.unlinkSync(file);
+        console.log(path.join( __dirname,"tmp",file));
+        console.log("file delete");
+       // fs.closeSync(path.join( __dirname,"tmp",file));
+        fs.unlink(path.join( __dirname,"tmp",file),function(err){
+
+        });
     }
 }

@@ -1,4 +1,4 @@
-import express,{Request,Response} from 'express';
+import express,{Request,response,Response} from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
@@ -7,6 +7,8 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // Init the Express application
   const app = express();
   var path = require('path'); 
+  var validUrl = require('valid-url');
+  const fs = require('fs');
   // Set the network port
   const port = process.env.PORT || 8082;
   
@@ -34,28 +36,50 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // Root Endpoint
   // Displays a simple message to the user
 
-  app.get( "/filteredimage/:image_url",   ( req:Request, res:Response ) => {
-    let { image_url } = req.params;
+  app.get( "/filteredimage",   ( req:Request, res:Response ) => {
+    let { image_url } = req.query;
+   
+     if (!validUrl.isUri(image_url)){
+       return res.status(401).send("Invalid image path");
+    }
+   
+    filterImageFromURL(image_url);
 
-  return res.status(200)
-              .send(`Welcome to the Cloud, ${image_url}!`);
-
-  } );
-  
-  app.get( "/", async ( req, res ) => {
     var options = { 
-      root: path.join(__dirname) 
+      root:  path.join( __dirname,"util","tmp")
   }; 
     
-  var fileName = 'ch2.jpg'; 
+  var fileName ="filteredimage.jpg"; 
+
     res.sendFile(fileName, options, function (err) { 
       if (err) { 
+        console.log(err); 
           res.send(err); 
-      } else { 
-          console.log('Sent:', fileName); 
-      } 
+      }
+       else { 
+            console.log('Sent:', fileName); 
+
+            fs.readdir(path.join( __dirname,"util","tmp"), function (err:Error, files:string[]) {
+              if (err) {
+                  return console.log('Unable to scan directory: ' + err);
+              }
+          
+              deleteLocalFiles(files);
+              
+          });
+
+            } 
   }); 
-   // res.send("try GET /filteredimage?image_url={{}}")
+  
+  
+  
+
+
+ });
+
+  app.get( "/", async ( req, res ) => {
+  
+    res.send("try GET /filteredimage?image_url={{}}")
   } );
   
 
