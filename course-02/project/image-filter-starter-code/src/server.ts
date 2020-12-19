@@ -14,6 +14,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
+
   app.get( "/filteredimage",   ( req:Request, res:Response ) => {
     let { image_url } = req.query;
    
@@ -24,43 +25,35 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
      new Promise( async resolve => {
       await filterImageFromURL(image_url);
       
-    var options = { 
-      root:  path.join( __dirname,"util","tmp")
-  }; 
+    var options = { root:  path.join( __dirname,"util","tmp") }; 
     
-  var fileName ="filteredimage.jpg"; 
+    var fileName ="filteredimage.jpg"; 
 
     res.sendFile(fileName, options, function (err) { 
-      if (err) { 
-        console.log(err); 
-          res.send(err); 
-      }
-       else { 
-            console.log('Sent:', fileName); 
+                if (err) { 
+                          console.log(err); 
+                          res.send(err); 
+                        }
+                else {
+                      console.log('Sent:', fileName); 
 
-            fs.readdir(path.join( __dirname,"util","tmp"), function (err:Error, files:string[]) {
-              if (err) {
-                  return console.log('Unable to scan directory: ' + err);
-              }
-          
-              deleteLocalFiles(files);
-              
-          });
+                      fs.readdir(path.join( __dirname,"util","tmp"), function (err:Error, files:string[]) {
+                          if (err) {
+                              return console.log('Unable to scan directory: ' + err);
+                          }
+                    
+                        deleteLocalFiles(files);
+                        
+                    });
 
-            } 
-  }); 
+                } 
+            }); 
     });
-
   
-  
-  
-
-
  });
 
   app.get( "/", async ( req, res ) => {
-  
-    res.send("try GET /filteredimage?image_url={{}}")
+      res.send("try GET /filteredimage?image_url={{}}")
   } );
   
 
